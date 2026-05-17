@@ -1,0 +1,13 @@
+{
+  "name": "@traffic-platform/shared",
+  "version": "1.0.0",
+  "description": "Shared types, interfaces, and utilities for Urban Traffic Platform microservices",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [],
+  "license": "MIT"
+}

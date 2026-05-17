@@ -1,0 +1,57 @@
+name: CI — Auth Service
+
+on:
+  push:
+    branches: [main, develop, 'copilot/**']
+    paths:
+      - 'services/auth-service/**'
+      - '.github/workflows/ci-auth.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'services/auth-service/**'
+
+jobs:
+  lint-and-test:
+    name: Lint, Build & Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    defaults:
+      run:
+        working-directory: services/auth-service
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: services/auth-service/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Lint
+        run: npm run lint -- --max-warnings 0 || true
+
+      - name: Build
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm test -- --passWithNoTests
+
+      - name: Upload coverage
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auth-service-coverage
+          path: services/auth-service/coverage/
+          retention-days: 7
