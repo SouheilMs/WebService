@@ -45,7 +45,25 @@ services:
         condition: service_healthy
     networks:
       - traffic_network
-    # TODO PR2: vehicle-service will be added here
+
+  vehicle-service:
+    build:
+      context: ./services/vehicle-service
+      dockerfile: Dockerfile
+    container_name: traffic_vehicle
+    restart: unless-stopped
+    env_file:
+      - ./services/vehicle-service/.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-traffic_user}:${POSTGRES_PASSWORD:-traffic_pass}@postgres:5432/vehicle_db?schema=public
+    ports:
+      - '3002:3002'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - traffic_network
+
     # TODO PR3: traffic-service will be added here
     # TODO PR4: incident-service will be added here
     # TODO PR5: notification-service will be added here

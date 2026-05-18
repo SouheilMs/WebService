@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum VehicleType {
+  CAR
+  BUS
+  TRUCK
+  MOTORCYCLE
+  EMERGENCY
+}
+
+enum VehicleStatus {
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
+}
+
+enum PositionSource {
+  MANUAL
+  SIMULATED
+}
+
+model Vehicle {
+  id                 String         @id @default(uuid())
+  licensePlate       String         @unique @map("license_plate")
+  vin                String?        @unique
+  type               VehicleType
+  status             VehicleStatus  @default(ACTIVE)
+  make               String
+  model              String
+  year               Int
+  color              String?
+  assignedOperatorId String?        @map("assigned_operator_id")
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime       @updatedAt @map("updated_at")
+  deletedAt          DateTime?      @map("deleted_at")
+  gpsPositions       GpsPosition[]
+
+  @@index([type, status])
+  @@index([assignedOperatorId])
+  @@map("vehicles")
+}
+
+model GpsPosition {
+  id         String         @id @default(uuid())
+  vehicleId  String         @map("vehicle_id")
+  latitude   Float
+  longitude  Float
+  altitude   Float?
+  accuracy   Float?
+  speed      Float?
+  heading    Float?
+  source     PositionSource @default(MANUAL)
+  recordedAt DateTime       @default(now()) @map("recorded_at")
+  createdAt  DateTime       @default(now()) @map("created_at")
+  vehicle    Vehicle        @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId, recordedAt(sort: Desc)])
+  @@map("gps_positions")
+}

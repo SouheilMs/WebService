@@ -9,7 +9,7 @@ This platform manages urban traffic in real-time through independent, scalable m
 | Service              | Port | Status  | Description                          |
 |---------------------|------|---------|--------------------------------------|
 | **auth-service**    | 3001 | ✅ PR1  | JWT authentication & user management |
-| vehicle-service     | 3002 | 🔜 PR2  | Vehicle registration & GPS tracking  |
+| **vehicle-service** | 3002 | ✅ PR2  | Vehicle registration & GPS tracking  |
 | traffic-service     | 3003 | 🔜 PR3  | Traffic zones & congestion analysis  |
 | incident-service    | 3004 | 🔜 PR4  | Incident reporting & management      |
 | notification-service| 3005 | 🔜 PR5  | Notifications & alerts               |
@@ -131,7 +131,7 @@ npm run test:cov          # with coverage
 ## 📈 Development Roadmap
 
 - [x] **PR1** — Project Foundation & Authentication Service
-- [ ] **PR2** — Vehicle Management Service & GPS Tracking
+- [x] **PR2** — Vehicle Management Service & GPS Tracking
 - [ ] **PR3** — Traffic Zones & Congestion Detection
 - [ ] **PR4** — Incident Management Service
 - [ ] **PR5** — Notification Service

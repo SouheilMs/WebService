@@ -1,21 +1,34 @@
 # Vehicle Service
 
-> **Status:** Placeholder — will be implemented in PR 2
+Vehicle tracking microservice for the Urban Traffic Management Platform.
 
-This service manages:
-- Vehicle registration
-- Vehicle types (car, bus, truck, motorcycle)
-- GPS position tracking
-- Vehicle assignment to operators
+## Features
+- Vehicle CRUD operations
+- GPS position tracking and simulated movement
+- Vehicle movement history with pagination and date filtering
+- REST endpoints with Swagger documentation
+- GraphQL queries and mutations
+- Prisma/PostgreSQL persistence with vehicle ↔ GPS position relations
 
-## Planned Endpoints
-- `POST /api/v1/vehicles` — Register a vehicle
-- `GET /api/v1/vehicles` — List vehicles
-- `GET /api/v1/vehicles/:id` — Get vehicle details
-- `PUT /api/v1/vehicles/:id/position` — Update GPS position
+## REST Endpoints
+- `POST /api/v1/vehicles`
+- `GET /api/v1/vehicles`
+- `GET /api/v1/vehicles/:id`
+- `PATCH /api/v1/vehicles/:id`
+- `DELETE /api/v1/vehicles/:id`
+- `POST /api/v1/vehicles/:id/tracking/simulate`
+- `GET /api/v1/vehicles/:id/history`
 
-## Architecture
-- NestJS microservice
-- PostgreSQL (vehicle_db)
-- Prisma ORM
-- JWT authentication
+## GraphQL
+Available at `http://localhost:3002/graphql`
+
+### Queries
+- `vehicles`
+- `vehicle`
+- `vehicleMovementHistory`
+
+### Mutations
+- `createVehicle`
+- `updateVehicle`
+- `deleteVehicle`
+- `simulateVehicleTracking`
