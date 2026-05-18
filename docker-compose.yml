@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+  # ──────────────────────────────────────────────
+  # PostgreSQL – shared database for all services
+  # ──────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: traffic_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-traffic_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-traffic_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-traffic_db}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-traffic_user}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - traffic_network
+
+  # ──────────────────────────────────────────────
+  # Authentication Service
+  # ──────────────────────────────────────────────
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    container_name: traffic_auth
+    restart: unless-stopped
+    env_file:
+      - ./services/auth-service/.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-traffic_user}:${POSTGRES_PASSWORD:-traffic_pass}@postgres:5432/auth_db?schema=public
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - traffic_network
+    # TODO PR2: vehicle-service will be added here
+    # TODO PR3: traffic-service will be added here
+    # TODO PR4: incident-service will be added here
+    # TODO PR5: notification-service will be added here
+    # TODO PR6: api-gateway will be added here
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  traffic_network:
+    driver: bridge

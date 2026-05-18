@@ -1,0 +1,27 @@
+{
+  "name": "urban-traffic-platform",
+  "version": "1.0.0",
+  "description": "Distributed intelligent urban traffic management platform",
+  "private": true,
+  "workspaces": [
+    "services/*",
+    "shared"
+  ],
+  "scripts": {
+    "auth": "npm run start --workspace=services/auth-service",
+    "auth:dev": "npm run start:dev --workspace=services/auth-service",
+    "auth:build": "npm run build --workspace=services/auth-service",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
+  },
+  "keywords": [
+    "nestjs",
+    "microservices",
+    "traffic-management",
+    "graphql",
+    "postgresql"
+  ],
+  "author": "Traffic Platform Team",
+  "license": "MIT"
+}
