@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CongestionLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model TrafficZone {
+  id              String            @id @default(uuid())
+  name            String            @unique
+  description     String?
+  minLatitude     Float             @map("min_latitude")
+  maxLatitude     Float             @map("max_latitude")
+  minLongitude    Float             @map("min_longitude")
+  maxLongitude    Float             @map("max_longitude")
+  speedLimitKph   Int               @default(50) @map("speed_limit_kph")
+  capacity        Int               @default(100)
+  congestionLevel CongestionLevel   @default(LOW) @map("congestion_level")
+  currentDensity  Float             @default(0) @map("current_density")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  snapshots       TrafficSnapshot[]
+
+  @@index([congestionLevel])
+  @@map("traffic_zones")
+}
+
+model TrafficSnapshot {
+  id                 String          @id @default(uuid())
+  zoneId             String          @map("zone_id")
+  vehicleCount       Int             @map("vehicle_count")
+  averageSpeedKph    Float           @map("average_speed_kph")
+  incidentCount      Int             @default(0) @map("incident_count")
+  densityPercent     Float           @map("density_percent")
+  congestionDetected Boolean         @map("congestion_detected")
+  classification     CongestionLevel
+  isSimulated        Boolean         @default(false) @map("is_simulated")
+  recordedAt         DateTime        @default(now()) @map("recorded_at")
+  createdAt          DateTime        @default(now()) @map("created_at")
+  zone               TrafficZone     @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  @@index([zoneId, recordedAt(sort: Desc)])
+  @@map("traffic_snapshots")
+}
