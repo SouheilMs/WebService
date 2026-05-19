@@ -64,9 +64,46 @@ services:
     networks:
       - traffic_network
 
+  incident-service:
+    build:
+      context: ./services/incident-service
+      dockerfile: Dockerfile
+    container_name: traffic_incident
+    restart: unless-stopped
+    env_file:
+      - ./services/incident-service/.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-traffic_user}:${POSTGRES_PASSWORD:-traffic_pass}@postgres:5432/incident_db?schema=public
+      NOTIFICATION_SERVICE_URL: http://notification-service:3005
+    ports:
+      - '3004:3004'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      notification-service:
+        condition: service_started
+    networks:
+      - traffic_network
+
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    container_name: traffic_notification
+    restart: unless-stopped
+    env_file:
+      - ./services/notification-service/.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-traffic_user}:${POSTGRES_PASSWORD:-traffic_pass}@postgres:5432/notification_db?schema=public
+    ports:
+      - '3005:3005'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - traffic_network
+
     # TODO PR3: traffic-service will be added here
-    # TODO PR4: incident-service will be added here
-    # TODO PR5: notification-service will be added here
     # TODO PR6: api-gateway will be added here
 
 volumes:

@@ -3,8 +3,6 @@
  * Shared types, interfaces, and constants used across all microservices.
  */
 
-// ── Enums ─────────────────────────────────────────────────────────────────────
-
 export enum Role {
   ADMIN = 'ADMIN',
   OPERATOR = 'OPERATOR',
@@ -25,24 +23,39 @@ export enum IncidentSeverity {
   CRITICAL = 'CRITICAL',
 }
 
+export enum IncidentType {
+  ACCIDENT = 'ACCIDENT',
+  ROADWORK = 'ROADWORK',
+  ROAD_CLOSED = 'ROAD_CLOSED',
+  TRAFFIC_JAM = 'TRAFFIC_JAM',
+}
+
 export enum IncidentStatus {
-  OPEN = 'OPEN',
+  REPORTED = 'REPORTED',
   IN_PROGRESS = 'IN_PROGRESS',
   RESOLVED = 'RESOLVED',
-  CLOSED = 'CLOSED',
+}
+
+export enum NotificationType {
+  INCIDENT_REPORTED = 'INCIDENT_REPORTED',
+  INCIDENT_UPDATED = 'INCIDENT_UPDATED',
+  SYSTEM = 'SYSTEM',
 }
 
 export enum CongestionLevel {
-  FREE = 'FREE',       // < 30% capacity
-  MODERATE = 'MODERATE', // 30–60%
-  HEAVY = 'HEAVY',    // 60–85%
-  SEVERE = 'SEVERE',  // > 85%
+  FREE = 'FREE',
+  MODERATE = 'MODERATE',
+  HEAVY = 'HEAVY',
+  SEVERE = 'SEVERE',
 }
 
-// ── JWT ───────────────────────────────────────────────────────────────────────
+export const INCIDENT_EVENTS = {
+  REPORTED: 'incident.reported',
+  STATUS_UPDATED: 'incident.status.updated',
+} as const;
 
 export interface JwtPayload {
-  sub: string;    // user id
+  sub: string;
   email: string;
   username: string;
   role: Role;
@@ -57,19 +70,33 @@ export interface AuthenticatedUser {
   role: Role;
 }
 
-// ── GPS ───────────────────────────────────────────────────────────────────────
-
 export interface GpsPosition {
   latitude: number;
   longitude: number;
   altitude?: number;
   accuracy?: number;
-  speed?: number;       // km/h
-  heading?: number;     // degrees (0–360)
+  speed?: number;
+  heading?: number;
   timestamp: Date;
 }
 
-// ── Service responses ─────────────────────────────────────────────────────────
+export interface IncidentLifecycleEventDto {
+  incidentId: string;
+  type: IncidentType;
+  status: IncidentStatus;
+  occurredAt: string;
+  title: string;
+  description?: string;
+}
+
+export interface CreateNotificationDto {
+  recipientUserId?: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+  incidentId?: string;
+  metadata?: Record<string, unknown>;
+}
 
 export interface PaginatedResponse<T> {
   data: T[];

@@ -11,6 +11,12 @@
     "auth": "npm run start --workspace=services/auth-service",
     "auth:dev": "npm run start:dev --workspace=services/auth-service",
     "auth:build": "npm run build --workspace=services/auth-service",
+    "incident": "npm run start --workspace=services/incident-service",
+    "incident:dev": "npm run start:dev --workspace=services/incident-service",
+    "incident:build": "npm run build --workspace=services/incident-service",
+    "notification": "npm run start --workspace=services/notification-service",
+    "notification:dev": "npm run start:dev --workspace=services/notification-service",
+    "notification:build": "npm run build --workspace=services/notification-service",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f"

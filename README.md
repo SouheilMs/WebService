@@ -11,8 +11,8 @@ This platform manages urban traffic in real-time through independent, scalable m
 | **auth-service**    | 3001 | ✅ PR1  | JWT authentication & user management |
 | **vehicle-service** | 3002 | ✅ PR2  | Vehicle registration & GPS tracking  |
 | traffic-service     | 3003 | 🔜 PR3  | Traffic zones & congestion analysis  |
-| incident-service    | 3004 | 🔜 PR4  | Incident reporting & management      |
-| notification-service| 3005 | 🔜 PR5  | Notifications & alerts               |
+| incident-service    | 3004 | ✅ PR4  | Incident reporting & management      |
+| notification-service| 3005 | ✅ PR4* | Notifications & alerts               |
 | **api-gateway**     | 4000 | 🔜 PR6  | GraphQL unified API gateway          |
 
 ## 🏗️ Architecture
@@ -133,8 +133,8 @@ npm run test:cov          # with coverage
 - [x] **PR1** — Project Foundation & Authentication Service
 - [x] **PR2** — Vehicle Management Service & GPS Tracking
 - [ ] **PR3** — Traffic Zones & Congestion Detection
-- [ ] **PR4** — Incident Management Service
-- [ ] **PR5** — Notification Service
+- [x] **PR4** — Incident Management Service
+- [x] **PR5** — Notification Service
 - [ ] **PR6** — GraphQL API Gateway
 
 ## 📁 Project Structure (Auth Service)

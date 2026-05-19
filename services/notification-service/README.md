@@ -1,20 +1,23 @@
 # Notification Service
 
-> **Status:** Placeholder — will be implemented in PR 5
+Notification microservice with reusable notification module.
 
-This service manages:
-- System notifications
-- User-targeted alerts
-- Notification delivery channels (in-app, email)
-- Notification templates
+## Features
+- Send notification
+- Get notifications
+- Mark notification as read
+- Receive incident lifecycle events from incident-service
+- WebSocket support scaffolding through `NotificationWebsocketGateway`
 
-## Planned Endpoints
+## Endpoints
 - `POST /api/v1/notifications` — Send notification
-- `GET /api/v1/notifications/me` — Get my notifications
+- `GET /api/v1/notifications` — Get notifications (supports query filters)
+- `GET /api/v1/notifications/me` — Get user notifications
 - `PATCH /api/v1/notifications/:id/read` — Mark as read
+- `POST /api/v1/internal/events/incidents` — Internal incident-event ingress
 
 ## Architecture
 - NestJS microservice
-- PostgreSQL (notification_db)
+- PostgreSQL (`notification_db`)
 - Prisma ORM
-- JWT authentication
+- Reusable shared enums/DTOs from `@traffic-platform/shared`

@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum IncidentType {
+  ACCIDENT
+  ROADWORK
+  ROAD_CLOSED
+  TRAFFIC_JAM
+}
+
+enum IncidentStatus {
+  REPORTED
+  IN_PROGRESS
+  RESOLVED
+}
+
+model Incident {
+  id               String         @id @default(uuid())
+  title            String
+  description      String?
+  type             IncidentType
+  status           IncidentStatus @default(REPORTED)
+  latitude         Float
+  longitude        Float
+  reportedByUserId String?        @map("reported_by_user_id")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  resolvedAt       DateTime?      @map("resolved_at")
+
+  @@index([type, status])
+  @@index([createdAt(sort: Desc)])
+  @@map("incidents")
+}
