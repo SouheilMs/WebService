@@ -1,136 +1,154 @@
-# 🚦 Urban Traffic Management Platform
+# Smart Urban Traffic Intelligence Platform
 
-Distributed urban-traffic platform built with NestJS microservices, GraphQL API Gateway, PostgreSQL, Prisma, and Docker.
+Distributed microservices platform for real-time urban traffic supervision, incident coordination, and operational decision support through a unified GraphQL gateway.
 
-## ✅ Platform Finalization (PR6)
+## Project Overview
 
-This repository now includes:
-- improved project documentation,
-- UML architecture diagrams,
-- Postman collection,
-- GraphQL test query suite,
-- production Docker compose override,
-- CI/CD pipeline for all services,
-- additional unit tests,
-- health-check endpoints for every service,
-- frontend admin dashboard structure with traffic map placeholder,
-- gateway architecture/performance cleanup.
+Rapid urban growth increases congestion, response times to incidents, and pressure on traffic operators.  
+This project addresses that challenge by providing a scalable digital platform that centralizes traffic data, vehicle movement, incident workflows, and notification delivery.
 
-## 🧩 Services
+### Objectives
+- Provide secure authentication and role-based access control for traffic operators.
+- Track vehicles and movement history using GPS-oriented data flows.
+- Analyze zone-level traffic density and classify congestion severity.
+- Coordinate incident lifecycle management and system-wide alerting.
+- Expose a single GraphQL API for clients while preserving service autonomy.
 
-| Service | Port | Main Role |
-|---|---:|---|
-| auth-service | 3001 | Authentication & users |
-| vehicle-service | 3002 | Vehicle management & tracking |
-| traffic-service | 3003 | Zones, congestion analysis, simulation |
-| incident-service | 3004 | Incident declaration and lifecycle |
-| notification-service | 3005 | Notification delivery + websocket hook |
-| api-gateway | 4000 | Unified GraphQL BFF |
+### Architecture Summary
+The platform follows a **microservices architecture** where each domain service encapsulates its own logic and persistence model.  
+An **API Gateway** aggregates services into a single GraphQL interface, enforcing centralized authentication and request orchestration.
 
-## 🏗️ Architecture
+## System Architecture
 
-- API Gateway exposes GraphQL operations and orchestrates all domain services.
-- Each service owns its own Prisma schema and database namespace.
-- Incident workflow emits events to notification-service.
-- Health checks are available for observability and container orchestration.
+### Microservices Architecture
+- Services are independently deployable NestJS applications.
+- Each core domain (auth, vehicle, traffic, incident, notification) is isolated.
+- Services expose REST APIs internally and are composed externally through GraphQL.
+- Health endpoints support observability and container orchestration.
 
-Architecture docs:
-- `docs/ARCHITECTURE.md`
-- `docs/UML_DIAGRAMS.md`
+### API Gateway Role
+- Serves as the unified client entry point on port `4000`.
+- Aggregates and delegates operations to downstream domain services.
+- Applies centralized JWT validation and role-aware authorization.
+- Reduces client complexity by hiding inter-service boundaries.
 
-## 🚀 Quick Start
+### Service Communication Model
+- **Client → Gateway:** GraphQL queries and mutations.
+- **Gateway → Domain Services:** HTTP-based service-to-service orchestration.
+- **Incident Service → Notification Service:** Internal incident-event relay endpoint for lifecycle notifications.
+- **Services → PostgreSQL:** Service-owned schemas/databases to preserve loose coupling.
 
-### Prerequisites
-- Node.js 20+
-- npm 10+
-- Docker + Docker Compose
+## Technologies Used
 
-### 1) Install dependencies
+| Layer | Technology | Purpose |
+|---|---|---|
+| Backend Framework | NestJS (Node.js) | Modular microservice development |
+| API Integration | GraphQL (Apollo Gateway pattern) | Unified API and service aggregation |
+| Data Storage | PostgreSQL + Prisma ORM | Persistent domain data and type-safe data access |
+| Security | JWT + RBAC (`ADMIN`, `OPERATOR`) | Authentication and authorization |
+| Containerization | Docker + Docker Compose | Reproducible local and deployment environments |
+| Real-Time (Optional) | WebSocket (notification scaffolding) | Live updates/events |
+| Frontend (Optional) | React / Next.js Dashboard | Monitoring and operator UI |
 
-```bash
-npm ci
-```
+## Microservices Description
 
-### 2) Configure environment
+### 1) Authentication Service (`auth-service`, port 3001)
+**Role:** Identity, access control, and user lifecycle management.  
+**Responsibilities:**
+- User registration and login.
+- JWT issuance and authenticated profile retrieval.
+- Role-based user administration (`ADMIN`, `OPERATOR`).
 
-```bash
-cp .env.example .env
-cp services/auth-service/.env.example services/auth-service/.env
-cp services/vehicle-service/.env.example services/vehicle-service/.env
-cp services/traffic-service/.env.example services/traffic-service/.env
-cp services/incident-service/.env.example services/incident-service/.env
-cp services/notification-service/.env.example services/notification-service/.env
-cp services/api-gateway/.env.example services/api-gateway/.env
-```
+**Main endpoints/features:**
+- `POST /api/v1/auth/register`
+- `POST /api/v1/auth/login`
+- `GET /api/v1/auth/me`
+- `POST /api/v1/users` (ADMIN)
+- `GET /api/v1/users` (ADMIN)
+- `PATCH /api/v1/users/:id` (ADMIN)
 
-### 3) Run with Docker
+### 2) Vehicle Management Service (`vehicle-service`, port 3002)
+**Role:** Vehicle registry, live positioning, and mobility history.  
+**Responsibilities:**
+- Vehicle creation and management.
+- GPS point ingestion/simulation.
+- Historical movement retrieval.
 
-```bash
-docker compose up -d
-```
+**Main endpoints/features:**
+- `POST /api/v1/vehicles`
+- `GET /api/v1/vehicles`
+- `PATCH /api/v1/vehicles/:id`
+- `POST /api/v1/vehicles/:id/tracking/simulate`
+- `GET /api/v1/vehicles/:id/history`
 
-### 4) Production profile
+### 3) Traffic Management Service (`traffic-service`, port 3003)
+**Role:** Traffic zone supervision and congestion intelligence.  
+**Responsibilities:**
+- Traffic zone definition and maintenance.
+- Density and congestion analysis.
+- Classification into `LOW`, `MEDIUM`, `HIGH`.
+- Simulation and analytics snapshots.
 
-```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
+**Main endpoints/features:**
+- `POST /api/v1/zones`
+- `GET /api/v1/zones`
+- `GET /api/v1/zones/:id/congestion`
+- `POST /api/v1/congestion/analyze`
+- `GET /api/v1/analytics`
 
-## 🩺 Health Checks
+### 4) Incident Management Service (`incident-service`, port 3004)
+**Role:** Incident declaration and operational tracking.  
+**Responsibilities:**
+- Incident reporting.
+- Status transition management (`REPORTED`, `IN_PROGRESS`, `RESOLVED`).
+- Event emission to downstream notification workflows.
 
-- Auth: `http://localhost:3001/api/v1/health`
-- Vehicle: `http://localhost:3002/api/v1/health`
-- Traffic: `http://localhost:3003/api/v1/health`
-- Incident: `http://localhost:3004/api/v1/health`
-- Notification: `http://localhost:3005/api/v1/health`
-- Gateway: `http://localhost:4000/health`
+**Main endpoints/features:**
+- `POST /api/v1/incidents`
+- `GET /api/v1/incidents`
+- `PATCH /api/v1/incidents/:id/status`
 
-## 🧪 Testing
+### 5) Notification Service (`notification-service`, port 3005)
+**Role:** Alert distribution and notification lifecycle.  
+**Responsibilities:**
+- Notification dispatch and retrieval.
+- Read state updates.
+- Incident event consumption from internal channel.
+- Optional WebSocket gateway scaffolding.
 
-### Local validation per service
+**Main endpoints/features:**
+- `POST /api/v1/notifications`
+- `GET /api/v1/notifications`
+- `GET /api/v1/notifications/me`
+- `PATCH /api/v1/notifications/:id/read`
+- `POST /api/v1/internal/events/incidents`
 
-```bash
-cd services/<service-name>
-npm run lint
-npm run build
-npm test -- --passWithNoTests
-```
+### 6) GraphQL Gateway (`api-gateway`, port 4000)
+**Role:** Unified API façade over all domain services.  
+**Responsibilities:**
+- GraphQL schema aggregation.
+- Resolver-level service orchestration.
+- Centralized security, validation, and error normalization.
 
-### CI/CD
+**Main endpoint:**
+- `http://localhost:4000/graphql`
 
-GitHub Actions workflow:
-- `.github/workflows/ci-platform.yml`
+## Database Design
 
-Pipeline includes:
-- matrix lint/build/test for all six services,
-- Prisma generation for Prisma-based services,
-- Docker image build stage on push to `main`.
+The platform uses **PostgreSQL** with domain-driven separation: each service owns its schema/database and persists only its bounded context.
 
-## 📚 API Testing Assets
+### Core Entities
+- **Auth Service:** `User`, `RefreshToken`
+- **Vehicle Service:** `Vehicle`, `GpsPosition`
+- **Traffic Service:** `TrafficZone`, `TrafficSnapshot`
+- **Incident Service:** `Incident`
+- **Notification Service:** `Notification`
 
-- Postman collection: `docs/postman/Urban_Traffic_Platform.postman_collection.json`
-- GraphQL test queries: `docs/graphql/test-queries.graphql`
-- GraphQL testing guide: `docs/GRAPHQL_TESTING.md`
-- REST examples: `docs/API_EXAMPLES.md`
+### Main Relations and Data Flow
+- `Vehicle → GpsPosition (1:N)`: one Vehicle has many GpsPosition records over time.
+- `TrafficZone → TrafficSnapshot (1:N)`: one TrafficZone has many TrafficSnapshot records.
+- `Incident` events are relayed to Notification service (logical integration, decoupled persistence).
+- `Notification` may reference an `incidentId` to connect alerts with incident workflows.
+- Cross-domain data correlation is performed at the API Gateway layer, which composes responses from multiple services without direct database sharing.
 
-## 🖥️ Frontend Dashboard (Structure)
-
-A lightweight dashboard scaffold is available in:
-- `frontend/dashboard/`
-
-Includes:
-- KPI card layout,
-- interactive traffic map placeholder structure,
-- real-time feed panel hook for WebSocket/live congestion updates.
-
-## 🔒 Tech Stack
-
-- NestJS 10
-- Apollo GraphQL
-- Prisma ORM
-- PostgreSQL 16
-- Docker Compose
-- GitHub Actions
-
----
-
-Built for scalable, observable, and production-ready urban traffic operations.
+This design ensures high cohesion per service, low coupling across domains, and scalability for distributed deployment.
