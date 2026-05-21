@@ -1,18 +1,24 @@
 # API Gateway (GraphQL)
 
-> **Status:** Placeholder — will be implemented in PR 6
+Unified GraphQL entry point for the Urban Traffic Platform.
 
-This service acts as the unified entry point for all microservices, providing:
-- GraphQL API aggregating all services
-- Single authentication point
-- Request routing to microservices
-- Response composition
+## Features
+- GraphQL schema aggregation for auth, vehicles, traffic, incidents, and notifications
+- Centralized JWT authentication and role-based authorization guards
+- Global request validation and GraphQL-aware rate limiting
+- Request logging middleware
+- GraphQL playground enabled by default
+- Standardized GraphQL error formatting
 
-## Architecture
-- NestJS with Apollo Server (GraphQL)
-- JWT authentication passthrough
-- Microservice communication via HTTP/TCP
-- GraphQL schema federation
+## Configuration
+Copy `.env.example` to `.env` and configure service URLs and `JWT_SECRET`.
 
-## GraphQL Playground
-Available at `http://localhost:4000/graphql`
+## Run
+```bash
+cd services/api-gateway
+npm install
+npm run start:dev
+```
+
+## Endpoint
+- GraphQL playground: `http://localhost:4000/graphql`
