@@ -13,8 +13,10 @@ import { GqlThrottlerGuard } from './common/guards/gql-throttler.guard';
 import { GatewayResolver } from './gateway/gateway.resolver';
 import { GatewayService } from './gateway/gateway.service';
 import { JsonScalar } from './common/scalars/json.scalar';
+import { HealthController } from './health/health.controller';
 
 @Module({
+  controllers: [HealthController],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,

@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  postgres:
+    restart: always
+
+  auth-service:
+    restart: always
+    environment:
+      NODE_ENV: production
+
+  vehicle-service:
+    restart: always
+    environment:
+      NODE_ENV: production
+
+  traffic-service:
+    restart: always
+    environment:
+      NODE_ENV: production
+
+  incident-service:
+    restart: always
+    environment:
+      NODE_ENV: production
+
+  notification-service:
+    restart: always
+    environment:
+      NODE_ENV: production
+
+  api-gateway:
+    restart: always
+    environment:
+      NODE_ENV: production
+      GRAPHQL_PLAYGROUND: 'false'

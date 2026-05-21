@@ -1,0 +1,84 @@
+# GraphQL test queries for API Gateway (http://localhost:4000/graphql)
+
+# ---------- Auth ----------
+mutation RegisterUser {
+  register(
+    input: {
+      email: "admin@traffic.io"
+      username: "admin"
+      password: "Admin@123!"
+      role: ADMIN
+    }
+  ) {
+    service
+    operation
+    status
+    payload
+  }
+}
+
+mutation LoginUser {
+  login(input: { email: "admin@traffic.io", password: "Admin@123!" }) {
+    status
+    payload
+  }
+}
+
+query AuthMe {
+  authMe {
+    status
+    payload
+  }
+}
+
+# ---------- Traffic ----------
+query TrafficZones {
+  trafficZones {
+    status
+    payload
+  }
+}
+
+query TrafficAnalytics {
+  trafficAnalytics(limit: 10) {
+    status
+    payload
+  }
+}
+
+mutation SimulateTraffic {
+  simulateTrafficCycle {
+    status
+    payload
+  }
+}
+
+# ---------- Incidents ----------
+mutation DeclareIncident {
+  declareIncident(
+    input: {
+      title: "Major congestion"
+      description: "Traffic is blocked on highway segment A"
+      severity: HIGH
+      location: { latitude: 36.8065, longitude: 10.1815 }
+    }
+  ) {
+    status
+    payload
+  }
+}
+
+query ListIncidents {
+  incidents(limit: 20) {
+    status
+    payload
+  }
+}
+
+# ---------- Notifications ----------
+query MyNotifications {
+  notifications(limit: 20) {
+    status
+    payload
+  }
+}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Urban Traffic Admin Dashboard</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Urban Traffic — Admin Dashboard</h1>
+      <p>Frontend structure for monitoring, incidents, and congestion snapshots.</p>
+    </header>
+
+    <main>
+      <section class="cards">
+        <article class="card">
+          <h2>Traffic Zones</h2>
+          <p id="zones-count">--</p>
+        </article>
+        <article class="card">
+          <h2>Active Incidents</h2>
+          <p id="incidents-count">--</p>
+        </article>
+        <article class="card">
+          <h2>Unread Notifications</h2>
+          <p id="notifications-count">--</p>
+        </article>
+      </section>
+
+      <section>
+        <h2>Interactive Traffic Map (Structure)</h2>
+        <div id="traffic-map" aria-label="traffic map"></div>
+      </section>
+
+      <section>
+        <h2>Live Congestion Updates (Structure)</h2>
+        <pre id="live-feed">Awaiting websocket events…</pre>
+      </section>
+    </main>
+
+    <script src="./map.js"></script>
+  </body>
+</html>

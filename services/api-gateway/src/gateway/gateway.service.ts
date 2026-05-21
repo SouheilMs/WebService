@@ -26,6 +26,7 @@ export class GatewayService {
         this.httpService.request({
           ...config,
           baseURL: baseUrl,
+          timeout: this.configService.get<number>('UPSTREAM_TIMEOUT_MS', 5000),
           headers: {
             ...(config.headers ?? {}),
             ...this.getForwardedHeaders(req),
@@ -49,6 +50,9 @@ export class GatewayService {
     const headers: Record<string, string> = {};
     if (typeof req.headers.authorization === 'string') {
       headers.authorization = req.headers.authorization;
+    }
+    if (typeof req.headers['x-request-id'] === 'string') {
+      headers['x-request-id'] = req.headers['x-request-id'];
     }
     return headers;
   }

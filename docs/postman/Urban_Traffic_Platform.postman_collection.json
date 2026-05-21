@@ -1,0 +1,73 @@
+{
+  "info": {
+    "name": "Urban Traffic Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "REST endpoints for Urban Traffic Management Platform services"
+  },
+  "variable": [
+    { "key": "auth_base", "value": "http://localhost:3001" },
+    { "key": "vehicle_base", "value": "http://localhost:3002" },
+    { "key": "traffic_base", "value": "http://localhost:3003" },
+    { "key": "incident_base", "value": "http://localhost:3004" },
+    { "key": "notification_base", "value": "http://localhost:3005" },
+    { "key": "gateway_base", "value": "http://localhost:4000" },
+    { "key": "access_token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{auth_base}}/api/v1/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@traffic.io\",\n  \"username\": \"admin\",\n  \"password\": \"Admin@123!\",\n  \"role\": \"ADMIN\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{auth_base}}/api/v1/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@traffic.io\",\n  \"password\": \"Admin@123!\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Traffic - List Zones",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": "{{traffic_base}}/api/v1/zones"
+      }
+    },
+    {
+      "name": "Incidents - List",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": "{{incident_base}}/api/v1/incidents"
+      }
+    },
+    {
+      "name": "Notifications - List",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": "{{notification_base}}/api/v1/notifications"
+      }
+    },
+    {
+      "name": "Gateway - Health",
+      "request": {
+        "method": "GET",
+        "url": "{{gateway_base}}/health"
+      }
+    }
+  ]
+}

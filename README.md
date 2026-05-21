@@ -1,176 +1,136 @@
 # 🚦 Urban Traffic Management Platform
 
-A distributed intelligent urban traffic management system built on a **microservices architecture** using NestJS, GraphQL, PostgreSQL, and Docker.
+Distributed urban-traffic platform built with NestJS microservices, GraphQL API Gateway, PostgreSQL, Prisma, and Docker.
 
-## 📋 Overview
+## ✅ Platform Finalization (PR6)
 
-This platform manages urban traffic in real-time through independent, scalable microservices:
+This repository now includes:
+- improved project documentation,
+- UML architecture diagrams,
+- Postman collection,
+- GraphQL test query suite,
+- production Docker compose override,
+- CI/CD pipeline for all services,
+- additional unit tests,
+- health-check endpoints for every service,
+- frontend admin dashboard structure with traffic map placeholder,
+- gateway architecture/performance cleanup.
 
-| Service              | Port | Status  | Description                          |
-|---------------------|------|---------|--------------------------------------|
-| **auth-service**    | 3001 | ✅ PR1  | JWT authentication & user management |
-| **vehicle-service** | 3002 | ✅ PR2  | Vehicle registration & GPS tracking  |
-| traffic-service     | 3003 | 🔜 PR3  | Traffic zones & congestion analysis  |
-| incident-service    | 3004 | ✅ PR4  | Incident reporting & management      |
-| notification-service| 3005 | ✅ PR4* | Notifications & alerts               |
-| **api-gateway**     | 4000 | 🔜 PR6  | GraphQL unified API gateway          |
+## 🧩 Services
+
+| Service | Port | Main Role |
+|---|---:|---|
+| auth-service | 3001 | Authentication & users |
+| vehicle-service | 3002 | Vehicle management & tracking |
+| traffic-service | 3003 | Zones, congestion analysis, simulation |
+| incident-service | 3004 | Incident declaration and lifecycle |
+| notification-service | 3005 | Notification delivery + websocket hook |
+| api-gateway | 4000 | Unified GraphQL BFF |
 
 ## 🏗️ Architecture
 
-```
-/services
-  /auth-service        ← NestJS + Prisma + PostgreSQL
-  /vehicle-service     ← NestJS + Prisma + PostgreSQL
-  /traffic-service     ← NestJS + Prisma + PostgreSQL
-  /incident-service    ← NestJS + Prisma + PostgreSQL
-  /notification-service← NestJS + Prisma + PostgreSQL
-  /api-gateway         ← NestJS + Apollo GraphQL
+- API Gateway exposes GraphQL operations and orchestrates all domain services.
+- Each service owns its own Prisma schema and database namespace.
+- Incident workflow emits events to notification-service.
+- Health checks are available for observability and container orchestration.
 
-/shared                ← Common types, interfaces, enums
-/docker                ← SQL init scripts
-/docs                  ← Architecture docs, API examples
-```
+Architecture docs:
+- `docs/ARCHITECTURE.md`
+- `docs/UML_DIAGRAMS.md`
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js ≥ 20
-- Docker & Docker Compose
-- npm ≥ 10
+- Node.js 20+
+- npm 10+
+- Docker + Docker Compose
 
-### 1. Clone & Configure
+### 1) Install dependencies
+
 ```bash
-git clone https://github.com/souheil-moussa-22/Web_Service.git
-cd Web_Service
+npm ci
+```
 
-# Configure root environment
+### 2) Configure environment
+
+```bash
 cp .env.example .env
-
-# Configure auth service
 cp services/auth-service/.env.example services/auth-service/.env
-# Edit .env and set a strong JWT_SECRET
+cp services/vehicle-service/.env.example services/vehicle-service/.env
+cp services/traffic-service/.env.example services/traffic-service/.env
+cp services/incident-service/.env.example services/incident-service/.env
+cp services/notification-service/.env.example services/notification-service/.env
+cp services/api-gateway/.env.example services/api-gateway/.env
 ```
 
-### 2. Start PostgreSQL with Docker
+### 3) Run with Docker
+
 ```bash
-docker compose up -d postgres
-```
-
-### 3. Start Auth Service (Development)
-```bash
-cd services/auth-service
-npm install
-npx prisma generate
-npx prisma migrate dev --name init
-npm run start:dev
-```
-
-### 4. Access the API
-- **REST API:** http://localhost:3001/api/v1
-- **Swagger UI:** http://localhost:3001/api/docs
-
-## 🔐 Authentication
-
-### Register
-```bash
-curl -X POST http://localhost:3001/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@traffic.io","username":"admin","password":"Admin@123!","role":"ADMIN"}'
-```
-
-### Login
-```bash
-curl -X POST http://localhost:3001/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@traffic.io","password":"Admin@123!"}'
-```
-
-## 👥 Roles
-
-| Role       | Permissions                                              |
-|-----------|----------------------------------------------------------|
-| `ADMIN`   | Full access: user management, all CRUD operations        |
-| `OPERATOR`| Limited access: read own resources, report incidents     |
-
-## 🐳 Docker (Full Stack)
-```bash
-# Start all services
 docker compose up -d
-
-# View logs
-docker compose logs -f auth-service
-
-# Stop all
-docker compose down
 ```
+
+### 4) Production profile
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+## 🩺 Health Checks
+
+- Auth: `http://localhost:3001/api/v1/health`
+- Vehicle: `http://localhost:3002/api/v1/health`
+- Traffic: `http://localhost:3003/api/v1/health`
+- Incident: `http://localhost:3004/api/v1/health`
+- Notification: `http://localhost:3005/api/v1/health`
+- Gateway: `http://localhost:4000/health`
 
 ## 🧪 Testing
+
+### Local validation per service
+
 ```bash
-cd services/auth-service
-npm test                  # unit tests
-npm run test:cov          # with coverage
+cd services/<service-name>
+npm run lint
+npm run build
+npm test -- --passWithNoTests
 ```
 
-## 📚 Documentation
-- [Architecture Overview](docs/ARCHITECTURE.md)
-- [API Examples](docs/API_EXAMPLES.md)
-- Swagger UI: http://localhost:3001/api/docs (when running)
+### CI/CD
 
-## 🛠️ Tech Stack
+GitHub Actions workflow:
+- `.github/workflows/ci-platform.yml`
 
-- **Runtime:** Node.js 20
-- **Framework:** NestJS 10
-- **Database:** PostgreSQL 16
-- **ORM:** Prisma 5
-- **Auth:** JWT (passport-jwt)
-- **Validation:** class-validator
-- **API Docs:** Swagger (OpenAPI 3.0)
-- **Containers:** Docker Compose
-- **CI/CD:** GitHub Actions
+Pipeline includes:
+- matrix lint/build/test for all six services,
+- Prisma generation for Prisma-based services,
+- Docker image build stage on push to `main`.
 
-## 📈 Development Roadmap
+## 📚 API Testing Assets
 
-- [x] **PR1** — Project Foundation & Authentication Service
-- [x] **PR2** — Vehicle Management Service & GPS Tracking
-- [ ] **PR3** — Traffic Zones & Congestion Detection
-- [x] **PR4** — Incident Management Service
-- [x] **PR5** — Notification Service
-- [ ] **PR6** — GraphQL API Gateway
+- Postman collection: `docs/postman/Urban_Traffic_Platform.postman_collection.json`
+- GraphQL test queries: `docs/graphql/test-queries.graphql`
+- GraphQL testing guide: `docs/GRAPHQL_TESTING.md`
+- REST examples: `docs/API_EXAMPLES.md`
 
-## 📁 Project Structure (Auth Service)
+## 🖥️ Frontend Dashboard (Structure)
 
-```
-services/auth-service/
-├── src/
-│   ├── main.ts                    # Bootstrap + Swagger
-│   ├── app.module.ts              # Root module
-│   ├── prisma/                    # Database connection
-│   │   ├── prisma.service.ts
-│   │   └── prisma.module.ts
-│   ├── auth/                      # Authentication module
-│   │   ├── auth.controller.ts     # POST /auth/register, /auth/login, GET /auth/me
-│   │   ├── auth.service.ts        # Business logic
-│   │   ├── auth.module.ts
-│   │   ├── dto/                   # Request/Response DTOs
-│   │   ├── guards/                # JwtAuthGuard
-│   │   └── strategies/            # JwtStrategy (passport)
-│   ├── users/                     # User management module
-│   │   ├── users.controller.ts    # CRUD endpoints
-│   │   ├── users.service.ts       # Business logic
-│   │   ├── users.module.ts
-│   │   └── dto/                   # CreateUserDto, UpdateUserDto, UserResponseDto
-│   └── common/                    # Shared utilities
-│       ├── filters/               # HttpExceptionFilter
-│       ├── guards/                # RolesGuard
-│       ├── decorators/            # @CurrentUser(), @Roles()
-│       └── types/                 # JwtPayload, AuthenticatedUser, Role
-├── prisma/
-│   └── schema.prisma              # User & RefreshToken models
-├── Dockerfile                     # Multi-stage production build
-├── entrypoint.sh                  # Runs migrations + starts server
-└── .env.example                   # Environment variable template
-```
+A lightweight dashboard scaffold is available in:
+- `frontend/dashboard/`
+
+Includes:
+- KPI card layout,
+- interactive traffic map placeholder structure,
+- real-time feed panel hook for WebSocket/live congestion updates.
+
+## 🔒 Tech Stack
+
+- NestJS 10
+- Apollo GraphQL
+- Prisma ORM
+- PostgreSQL 16
+- Docker Compose
+- GitHub Actions
 
 ---
 
-*Built with ❤️ following SOLID principles and Clean Architecture*
+Built for scalable, observable, and production-ready urban traffic operations.

@@ -1,0 +1,71 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f5f7fb;
+  color: #0f172a;
+}
+
+header {
+  padding: 1rem 1.5rem;
+  background: #0b3b8f;
+  color: #fff;
+}
+
+main {
+  padding: 1rem 1.5rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+#traffic-map {
+  margin-top: 0.75rem;
+  height: 360px;
+  border-radius: 0.5rem;
+  border: 1px solid #cbd5e1;
+  background: linear-gradient(135deg, #e2e8f0 25%, #f8fafc 25%, #f8fafc 50%, #e2e8f0 50%, #e2e8f0 75%, #f8fafc 75%, #f8fafc 100%);
+  background-size: 24px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.zone {
+  position: absolute;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+}
+
+.zone.low {
+  background: #16a34a;
+}
+
+.zone.medium {
+  background: #f59e0b;
+}
+
+.zone.high {
+  background: #dc2626;
+}
+
+#live-feed {
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
