@@ -17,6 +17,9 @@
     "notification": "npm run start --workspace=services/notification-service",
     "notification:dev": "npm run start:dev --workspace=services/notification-service",
     "notification:build": "npm run build --workspace=services/notification-service",
+    "gateway": "npm run start --workspace=services/api-gateway",
+    "gateway:dev": "npm run start:dev --workspace=services/api-gateway",
+    "gateway:build": "npm run build --workspace=services/api-gateway",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f"
