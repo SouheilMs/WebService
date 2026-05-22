@@ -5,9 +5,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+RUN apk add --no-cache openssl
+
 # Install dependencies first (layer caching)
 COPY package*.json ./
-RUN npm ci --only=production=false
+RUN npm install --include=dev
 
 # Copy source & Prisma schema
 COPY . .

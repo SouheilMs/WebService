@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   # ──────────────────────────────────────────────
   # PostgreSQL – shared database for all services
@@ -25,9 +23,6 @@ services:
     networks:
       - traffic_network
 
-  # ──────────────────────────────────────────────
-  # Authentication Service
-  # ──────────────────────────────────────────────
   auth-service:
     build:
       context: ./services/auth-service
@@ -102,8 +97,8 @@ services:
 
   incident-service:
     build:
-      context: ./services/incident-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/incident-service/Dockerfile
     container_name: traffic_incident
     restart: unless-stopped
     env_file:
@@ -129,8 +124,8 @@ services:
 
   notification-service:
     build:
-      context: ./services/notification-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/notification-service/Dockerfile
     container_name: traffic_notification
     restart: unless-stopped
     env_file:

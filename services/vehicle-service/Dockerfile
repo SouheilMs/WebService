@@ -2,8 +2,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+RUN apk add --no-cache openssl
+
 COPY package*.json ./
-RUN npm ci --only=production=false
+RUN npm install --include=dev --no-audit --no-fund
 
 COPY . .
 RUN npx prisma generate
